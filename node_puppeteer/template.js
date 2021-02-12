@@ -15,12 +15,59 @@ async function run (){
     const page = await browser.newPage();  
     
 
+    page.on("dialog", (dialog)=>{
+        dialog.accept();
+    });
+
     // 웹사이트 로딩
-    await page.goto('https://search.naver.com/search.naver?where=nexearch&sm=top_hty&fbm=0&ie=utf8&query=%EC%BD%94%EC%8A%A4%ED%94%BC', {timeout: 0, waitUntil: 'domcontentloaded'});
+    //await page.goto('https://search.naver.com/search.naver?where=nexearch&sm=top_hty&fbm=0&ie=utf8&query=%EC%BD%94%EC%8A%A4%ED%94%BC', {timeout: 0, waitUntil: 'domcontentloaded'});
 
     // 상단 테이블의 th 제목을 가져오고 싶은경우
-    const tdName = await page.$eval('.spt_con strong', strong => strong.textContent.trim() );
-    console.log(tdName);
+    // const tdName = await page.$eval('.spt_con strong', strong => strong.textContent.trim() );
+    // console.log(tdName);
+
+       // 웹사이트 로딩
+       await page.goto('http://localhost:3000/', {timeout: 0, waitUntil: 'domcontentloaded'});
+
+       // 상단 테이블의 th 제목을 가져오고 싶은경우
+       // const tdName = await page.$eval('table tr:nth-child(1) th:nth-child(1)', th => th.textContent.trim() );
+       // console.log(tdName);
+
+        await page.waitForSelector('.btn-default');
+        await page.click('.btn-default');
+
+        await page.waitForSelector('.btn-primary');
+        await page.evaluate((a,b)=>{
+            document.querySelector('input[name]=name').value = a;
+            document.querySelector('textarea[name]=description').value = b;
+            document.querySelector('.btn-primary').click();
+        }, insert_name, insert_description);
+
+
+        await page.waitForSelector('.btn-default');
+
+        await page.click('table tr:nth-child(2) tb:nth-child(1)');
+        
+        await page.waitForSelector('.btn-primary');
+
+        await page.click('.btn-primary');
+
+        await page.waitForSelector('.btn-primary');
+
+        // 수정하기
+        await page.evaluate((a,b) =>{
+            document.querySelector('input[name]=name').value = a;
+            document.querySelector('textarea[name]=description').value = b;
+            document.querySelector('.btn-primary').click();
+        }, modi_name,modi_description);
+
+        await page.waitForSelector('.btn-default');
+        await page.click('.btn-default');
+        await page.waitForSelector('.btn-default');
+
+        await page.click('.btn-danger');
+
+
 
     // 브라우저 닫기
     await browser.close();
